@@ -57,6 +57,16 @@ function isValidEmail(email) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 }
 
+function showToast(message) {
+  var toast = document.getElementById('toast');
+  toast.textContent = message;
+  toast.classList.add('show');
+
+  setTimeout(function() {
+    toast.classList.remove('show');
+  }, 3000);
+}
+
 function doLogin() {
   var email = document.getElementById('login-email').value.trim();
   var pw = document.getElementById('login-pw').value;
@@ -78,6 +88,7 @@ function doLogin() {
 
   if (valid) {
     localStorage.setItem('qm_user', email);
+    showToast('🎉 Login Successful! Redirecting to Dashboard...');
     window.location.href = 'dashboard.html';
   }
 }
@@ -119,7 +130,10 @@ function doSignup() {
 
   if (valid) {
     localStorage.setItem('qm_user', email);
-    window.location.href = 'dashboard.html';
+    showToast('🎉 Registration Successful! Redirecting to Login...');
+    setTimeout(function() {
+      window.location.href = 'index.html';
+    }, 3000);
   }
 }
 
