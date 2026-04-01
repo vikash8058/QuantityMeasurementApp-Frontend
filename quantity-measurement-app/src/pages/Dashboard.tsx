@@ -111,13 +111,15 @@ function Dashboard() {
   }
 
   function getBaseValue(unitLabel: string) {
-    var baseValues: any = {
-      'Feet': 12, 'Inches': 1, 'Yards': 36, 'Centimeters': 0.393701,
-      'Kilogram': 1000, 'Gram': 1, 'Milligram': 0.001, 'Pound': 453.592, 'Tonne': 1000000,
-      'Litre': 1000, 'Millilitre': 1, 'Gallon': 3785.41,
-    };
-    return baseValues[unitLabel] || 1;
-  }
+  var normalized = unitLabel.charAt(0).toUpperCase() + unitLabel.slice(1).toLowerCase();
+  var baseValues: any = {
+    'Feet': 12, 'Inches': 1, 'Yards': 36, 'Centimeters': 0.393701,
+    'Kilogram': 1000, 'Gram': 1, 'Milligram': 0.001, 'Pound': 453.592, 'Tonne': 1000000,
+    'Litre': 1000, 'Millilitre': 1, 'Gallon': 3785.41,
+    'Celsius': 1, 'Fahrenheit': 1, 'Kelvin': 1,
+  };
+  return baseValues[normalized] || 1;
+}
 
   function toKelvin(val: number, unit: string) {
     if (unit === 'Celsius') return val + 273.15;
@@ -231,7 +233,22 @@ function Dashboard() {
           }
           return;
         }
-        var result = data.thisValue + ' ' + data.thisUnit + ' ' + opLabel + ' ' + data.thatValue + ' ' + data.thatUnit + ' = ' + data.resultValue + ' ' + data.resultUnit;
+
+        var resultUnit = data.resultUnit ? data.resultUnit : arithResultUnit.toUpperCase();
+        
+        // format the number nicely
+        var rawValue = data.resultValue;
+        var formattedValue;
+        
+        if (Math.abs(rawValue) < 0.0001) {
+          formattedValue = rawValue.toExponential(4);  // shows as 1.7637e-5
+        } else if (Math.abs(rawValue) < 1) {
+          formattedValue = parseFloat(rawValue.toFixed(6));  // shows as 0.000176
+        } else {
+          formattedValue = parseFloat(rawValue.toFixed(4));  // shows as 1001.0000
+        }
+
+        var result = data.thisValue + ' ' + data.thisUnit + ' ' + opLabel + ' ' + data.thatValue + ' ' + data.thatUnit + ' = ' + formattedValue + ' ' + resultUnit;
         setArithResult(result);
         addToHistory('[Arithmetic ' + opLabel + '] ' + result);
       })
